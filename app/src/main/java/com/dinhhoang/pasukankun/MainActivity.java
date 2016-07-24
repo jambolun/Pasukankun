@@ -3,7 +3,6 @@ package com.dinhhoang.pasukankun;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -39,29 +38,10 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     ListView listAcc;
-    LinearLayout linearLayoutMain;
-
     private static final String KEY1 = "key1";
     private static final String KEY2 = "key2";
 
-    // 表示させる文字列
-    private String[] GROUPS = {"Group1", "Group2", "Group3", "Group4"};
-    private String[][][] CHILDREN = {
-            {{"Child11", "Text11"}},
-            {{"Child21", "Text21"}, {"Child22", "Text22"}},
-            {{"Child31", "Text31"}, {"Child32", "Text32"}, {"Child33", "Text33"}},
-    };
-
-    List<Map<String, String>> groupData = new ArrayList<Map<String, String>>(); // 親ノードリスト
-    List<List<Map<String, String>>> childData = new ArrayList<List<Map<String, String>>>(); // 子ノードリスト
-
-    Map<String, String> accIDmap = new HashMap<String, String>();// アカウントを保存するmap
-
-    ExpandableListAdapter listAdapter;
-    ExpandableListView expListView;
-    List<String> listDataHeader;
-    List<String> listDataCat;
-    HashMap<String, List<String>> listDataChild;
+    Map<String, String> accIDmap = new HashMap<>();// アカウントを保存するmap
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,9 +101,9 @@ public class MainActivity extends AppCompatActivity
         //prepareListData();
         // 設定する文字列のリスト
         List<Map<String, String>> groupData =
-                new ArrayList<Map<String, String>>();
+                new ArrayList<>();
         List<List<Map<String, String>>> childData =
-                new ArrayList<List<Map<String, String>>>();
+                new ArrayList<>();
 
         MyOpenHelper helper = new MyOpenHelper(this);
         SQLiteDatabase db = helper.getReadableDatabase();
@@ -139,13 +119,13 @@ public class MainActivity extends AppCompatActivity
 
             // 親要素の追加
             Map<String, String> curGroupMap =
-                    new HashMap<String, String>();
+                    new HashMap<>();
             groupData.add(curGroupMap);
             curGroupMap.put(KEY1, strCatTitle);
             curGroupMap.put(KEY2, "");
 
             List<Map<String, String>> children =
-                    new ArrayList<Map<String, String>>();
+                    new ArrayList<>();
 
             Cursor c2 = db.rawQuery("select _id, title, user, pass, url, memo from acc_table WHERE category=" + catID, null);
             boolean isEof2 = c2.moveToFirst();
@@ -154,9 +134,6 @@ public class MainActivity extends AppCompatActivity
                 //String test = String.format("(%d)[%s]%s : %s : %s : %s ", c.getInt(0), c.getString(1), c.getString(2), c.getString(3), c.getString(4), c.getString(5));
                 String strAccTitle = String.format("%s", c2.getString(1));
                 int accID = c2.getInt(0);
-                //String accMapKey = String.format("%d%d",cat_i,acc_i);
-                //String accMapVal = String.format("%d",accID);
-
 
                 //アカウントのidを覚えておく
                 accIDmap.put(String.format("%d%d", cat_i, acc_i), String.valueOf(accID));
@@ -164,7 +141,7 @@ public class MainActivity extends AppCompatActivity
 
                 // 子要素の追加
                 Map<String, String> curChildMap =
-                        new HashMap<String, String>();
+                        new HashMap<>();
                 children.add(curChildMap);
                 curChildMap.put(KEY1, strAccTitle);
                 curChildMap.put(KEY2, "moment");
@@ -250,7 +227,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        ;
+
     };
 
     private void showListView99() {
