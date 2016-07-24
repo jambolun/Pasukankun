@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Quản lý mật khẩu</string>
+
+    <string name="navigation_drawer_open">Mở trình đơn</string>
+    <string name="navigation_drawer_close">Đóng trình đơn</string>
+
+    <string name="action_settings">Cài đặt</string>
+    <string name="menu_import">Nhập dữ liệu từ file CSV</string>
+    <string name="menu_export">Xuất dữ liệu ra file CSV</string>
+    <string name="menu_add_acc">Thêm thông tin mới</string>
+    <string name="memu_refresh">Cập nhật</string>
+    <string name="action_delete">Xóa</string>
+    <string name="action_update">Cập nhật</string>
+    <string name="action_delete_all">Xóa tất cả</string>
+    <string name="action_add_acc">Thêm mới</string>
+</resources>

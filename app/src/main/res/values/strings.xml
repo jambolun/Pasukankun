@@ -1,8 +1,16 @@
 <resources>
-    <string name="app_name">Pasukankun</string>
+    <string name="app_name">パス管くん</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="navigation_drawer_open">メニューを開く</string>
+    <string name="navigation_drawer_close">メニューを閉じる</string>
 
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">設定</string>
+    <string name="menu_import">CSVファイルから読み込み</string>
+    <string name="menu_export">CSVファイルに書き出し</string>
+    <string name="menu_add_acc">アカウント情報を追加</string>
+    <string name="memu_refresh">更新</string>
+    <string name="action_delete">削除</string>
+    <string name="action_update">更新</string>
+    <string name="action_delete_all">すべて削除</string>
+    <string name="action_add_acc">登録</string>
 </resources>
