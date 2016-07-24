@@ -13,4 +13,12 @@
     <string name="action_update">更新</string>
     <string name="action_delete_all">すべて削除</string>
     <string name="action_add_acc">登録</string>
+    <string name="label_acc_info">アカウント情報</string>
+    <string name="content_id">ユーザーID</string>
+    <string name="label_pass">パスワード</string>
+    <string name="label_id">ユーザーID</string>
+    <string name="label_url">URL</string>
+    <string name="label_memo">備考</string>
+    <string name="label_showall">すべてのアカウント</string>
+    <string name="menu_utility">便利な機能</string>
 </resources>

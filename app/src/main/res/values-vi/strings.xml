@@ -15,4 +15,12 @@
     <string name="action_update">Cập nhật</string>
     <string name="action_delete_all">Xóa tất cả</string>
     <string name="action_add_acc">Thêm mới</string>
+    <string name="label_acc_info">Thông tin tài khoản</string>
+    <string name="content_id">Tên đăng nhập</string>
+    <string name="label_pass">Mật khẩu</string>
+    <string name="label_id">Tên đăng nhập</string>
+    <string name="label_url">Địa chỉ trang web (URL)</string>
+    <string name="label_memo">Ghi trú</string>
+    <string name="label_showall">Tất cả các tài khoản</string>
+    <string name="menu_utility">Tiện ích</string>
 </resources>

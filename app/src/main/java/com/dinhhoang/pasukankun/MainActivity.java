@@ -1,15 +1,13 @@
 package com.dinhhoang.pasukankun;
 
 import android.content.Intent;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -21,18 +19,49 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ExpandableListAdapter;
+import android.widget.ExpandableListView;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.SimpleExpandableListAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     ListView listAcc;
+    LinearLayout linearLayoutMain;
+
+    private static final String KEY1 = "key1";
+    private static final String KEY2 = "key2";
+
+    // 表示させる文字列
+    private String[] GROUPS = {"Group1", "Group2", "Group3", "Group4"};
+    private String[][][] CHILDREN = {
+            {{"Child11", "Text11"}},
+            {{"Child21", "Text21"}, {"Child22", "Text22"}},
+            {{"Child31", "Text31"}, {"Child32", "Text32"}, {"Child33", "Text33"}},
+    };
+
+    List<Map<String, String>> groupData = new ArrayList<Map<String, String>>(); // 親ノードリスト
+    List<List<Map<String, String>>> childData = new ArrayList<List<Map<String, String>>>(); // 子ノードリスト
+
+    Map<String, String> accIDmap = new HashMap<String, String>();// アカウントを保存するmap
+
+    ExpandableListAdapter listAdapter;
+    ExpandableListView expListView;
+    List<String> listDataHeader;
+    List<String> listDataCat;
+    HashMap<String, List<String>> listDataChild;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,12 +89,17 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        /*my sql*/
+        //setViews();
+        //showListView();
+        showExpandableListView();
+
+        //loadMainContent();
 
 
-        setViews();
-        showListView();
 
+    }
+
+    private void loadMainContent() {
 
     }
 
@@ -74,32 +108,168 @@ public class MainActivity extends AppCompatActivity
         Intent intent = new Intent(MainActivity.this, DetailActivity.class);
         // 次画面のアクティビティ起動
         startActivity(intent);
-        //db.execSQL("insert into person_table(name,age) values ('本田 圭佑', 24);");
     }
 
     private void setViews() {
-        listAcc = (ListView) findViewById(R.id.listView);
+        //listAcc = (ListView) findViewById(R.id.listView);
+        //linearLayoutMain = (LinearLayout) findViewById(R.id.linearViewMain);
+
     }
 
-    private void showListView() {
+    private void showExpandableListView() {
+        //データを準備する
+        //prepareListData();
+        // 設定する文字列のリスト
+        List<Map<String, String>> groupData =
+                new ArrayList<Map<String, String>>();
+        List<List<Map<String, String>>> childData =
+                new ArrayList<List<Map<String, String>>>();
+
+        MyOpenHelper helper = new MyOpenHelper(this);
+        SQLiteDatabase db = helper.getReadableDatabase();
+
+        //Cursor c = db.rawQuery("select _id, acc, pass, url, memo from acc_table", null);
+        Cursor c = db.rawQuery("select _id, title, user, pass, url, memo from acc_table WHERE category=0", null);
+        boolean isEof = c.moveToFirst();
+        int cat_i = 0;
+        while (isEof) {
+            //String test = String.format("(%d)[%s]%s : %s : %s : %s ", c.getInt(0), c.getString(1), c.getString(2), c.getString(3), c.getString(4), c.getString(5));
+            String strCatTitle = String.format("%s", c.getString(1));
+            int catID = c.getInt(0);
+
+            // 親要素の追加
+            Map<String, String> curGroupMap =
+                    new HashMap<String, String>();
+            groupData.add(curGroupMap);
+            curGroupMap.put(KEY1, strCatTitle);
+            curGroupMap.put(KEY2, "");
+
+            List<Map<String, String>> children =
+                    new ArrayList<Map<String, String>>();
+
+            Cursor c2 = db.rawQuery("select _id, title, user, pass, url, memo from acc_table WHERE category=" + catID, null);
+            boolean isEof2 = c2.moveToFirst();
+            int acc_i = 0;
+            while (isEof2) {
+                //String test = String.format("(%d)[%s]%s : %s : %s : %s ", c.getInt(0), c.getString(1), c.getString(2), c.getString(3), c.getString(4), c.getString(5));
+                String strAccTitle = String.format("%s", c2.getString(1));
+                int accID = c2.getInt(0);
+                //String accMapKey = String.format("%d%d",cat_i,acc_i);
+                //String accMapVal = String.format("%d",accID);
+
+
+                //アカウントのidを覚えておく
+                accIDmap.put(String.format("%d%d", cat_i, acc_i), String.valueOf(accID));
+
+
+                // 子要素の追加
+                Map<String, String> curChildMap =
+                        new HashMap<String, String>();
+                children.add(curChildMap);
+                curChildMap.put(KEY1, strAccTitle);
+                curChildMap.put(KEY2, "moment");
+                //次の要素へ
+                acc_i++;
+                isEof2 = c2.moveToNext();
+            }
+            childData.add(children);
+            c2.close();
+
+            //次の要素へ
+            cat_i++;
+            isEof = c.moveToNext();
+        }
+
+        c.close();
+        db.close();
+
+
+        // ExpandbleListAdapter の作成
+        ExpandableListAdapter adapter =
+                new SimpleExpandableListAdapter(
+                        this,
+                        groupData,
+                        R.layout.list_item_category,
+                        new String[]{KEY1, KEY2},
+                        //new int[]{android.R.id.text1, android.R.id.text2},
+                        new int[]{R.id.textCatTitle, android.R.id.text2},
+                        childData,
+                        R.layout.list_item_acc,
+                        new String[]{KEY1, KEY2},
+                        //new int[]{android.R.id.text1, android.R.id.text2}
+                        new int[]{R.id.textAcc1, R.id.textAcc2}
+                );
+
+        ExpandableListView listView =
+                (ExpandableListView) findViewById(R.id.expandableListView);
+        // Adapter を設定
+        listView.setAdapter(adapter);
+
+        // グループがクリックされた時に呼び出されるコールバックを登録
+        listView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+            @Override
+            public boolean onGroupClick(ExpandableListView parent,
+                                        View v, int groupPosition, long id) {
+                // クリックされた時の処理
+
+                return false;
+            }
+        });
+
+        // グループ内の項目がクリックされた時に呼び出されるコールバックを登録
+        listView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v,
+                                        int groupPosition, int childPosition, long id) {
+                // クリックされた時の処理
+                //Toast.makeText(MainActivity.this, String.format("groupPosition=%d,childPosition=%d,id=%d",groupPosition,childPosition,id), Toast.LENGTH_SHORT).show();
+
+                Toast.makeText(
+                        getApplicationContext(),
+                        "id=" + accIDmap.get(String.format("%d%d", groupPosition, childPosition)), Toast.LENGTH_SHORT)
+                        .show();
+
+                return false;
+            }
+        });
+
+
+    }
+
+    private View.OnFocusChangeListener myEditTextFocus = new View.OnFocusChangeListener() {
+        public void onFocusChange(View view, boolean gainFocus) {
+            //onFocus
+            if (gainFocus) {
+                //set the text
+                ((EditText) view).setText("In focus now");
+            }
+            //onBlur
+            else {
+                //clear the text
+                ((EditText) view).setText("");
+            }
+        }
+
+        ;
+    };
+
+    private void showListView99() {
         List<String> members = new ArrayList<String>();
 
-        PersonOpenHelper helper = new PersonOpenHelper(this);
+        MyOpenHelper helper = new MyOpenHelper(this);
         SQLiteDatabase db = helper.getReadableDatabase();
-/*
-        Cursor c = db.query("person_table", new String[] { "name", "age" },
-                null, null, null, null, null);
-*/
-        Cursor c = db.rawQuery("select _id, name, age from person_table", null);
+
+        //Cursor c = db.rawQuery("select _id, acc, pass, url, memo from acc_table", null);
+        Cursor c = db.rawQuery("select _id, title, user, pass, url, memo from acc_table", null);
         boolean isEof = c.moveToFirst();
         while (isEof) {
             //String test = String.format("%s : %d才", c.getString(0), c.getInt(1));
-            String test = String.format("(%d)%s : %d才", c.getInt(0), c.getString(1), c.getInt(2));
+            //String test = String.format("(%d)%s : %d才", c.getInt(0), c.getString(1), c.getInt(2));
+            String test = String.format("(%d)[%s]%s : %s : %s : %s ", c.getInt(0), c.getString(1), c.getString(2), c.getString(3), c.getString(4), c.getString(5));
             isEof = c.moveToNext();
             members.add(test);
         }
         c.close();
-
         db.close();
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
@@ -124,52 +294,11 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void showListView2() {
-
-        PersonOpenHelper helper = new PersonOpenHelper(this);
-        SQLiteDatabase db = helper.getReadableDatabase();
-
-        //Cursor c = db.query("person_table", new String[] {"_id","name","age"}, null, null, null, null, null);
-        Cursor c = db.rawQuery("select rowid as _id, name, age from person_table", null);
-        startManagingCursor(c);
-
-        ListAdapter adapter = new SimpleCursorAdapter(this,
-                android.R.layout.simple_list_item_2, c,
-                new String[]{"name", "age"},
-                new int[]{android.R.id.text1, android.R.id.text2});
-
-
-        listAcc.setAdapter(adapter);
-        listAcc.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-
-
-                int itemPosition = position;
-
-                String itemValue = "@@@";// (String) listAcc.getItemAtPosition(position);
-                //String[]  itemValue    = (String[]) listAcc.getItemAtPosition(position);
-
-                Toast.makeText(getApplicationContext(),
-                        "Position :" + itemPosition + "  ListItem : " + itemValue, Toast.LENGTH_LONG)
-                        .show();
-
-            }
-        });
-        /*
-        c.close();
-
-        db.close();
-        */
-    }
-
 
     @Override
     protected void onResume() {
         super.onResume();
-        showListView();
+        showExpandableListView();
 
     }
 
@@ -202,7 +331,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.action_settings) {
             return true;
         } else if (id == R.id.action_reload) {
-            showListView();
+            showExpandableListView();
             return true;
         }
         return super.onOptionsItemSelected(item);

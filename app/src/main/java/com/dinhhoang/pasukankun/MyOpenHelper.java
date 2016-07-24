@@ -4,6 +4,7 @@ package com.dinhhoang.pasukankun;
  * Created by dinhhoang on 2016/07/22.
  */
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -11,34 +12,52 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
-public class PersonOpenHelper extends SQLiteOpenHelper {
+import java.util.ArrayList;
+import java.util.List;
+
+public class MyOpenHelper extends SQLiteOpenHelper {
     final static private int DB_VERSION = 1;
 
-    public PersonOpenHelper(Context context) {
+    public MyOpenHelper(Context context) {
         //super(context, null, null, DB_VERSION);
-        super(context, "NameAgeDB", null, DB_VERSION);
+        super(context, "MyAccDB", null, DB_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         // table create
-        db.execSQL(
-                "create table person_table(" +
-                        "_id integer primary key autoincrement," +
-                        "   name text not null," +
-                        "   age text" +
-                        ");"
-        );
+        String CREATE_TABLE = "create table acc_table (" +
+                "_id integer primary key autoincrement," +
+                "category INTEGER DEFAULT 0," +
+                "title text not null," +
+                "user text," +
+                "pass text," +
+                "url text," +
+                "memo text );";
 
-        // table row insert
-        db.execSQL("insert into person_table(name,age) values ('本田 圭佑', 24);");
-        db.execSQL("insert into person_table(name,age) values ('遠藤 保仁', 30);");
-        db.execSQL("insert into person_table(name,age) values ('松井 大輔', 29);");
-        db.execSQL("insert into person_table(name,age) values ('hoang', 27);");
+        db.execSQL(CREATE_TABLE);
+
+        //サンプルのカテゴリー
+        //String sampleCatSQL = "insert into acc_table(category, title) values(0, 'サンプルのカテゴリー')";
+        for (int cat_i = 0; cat_i < 5; cat_i++) {
+            ContentValues insertValues = new ContentValues();
+            insertValues.put("category", 0);
+            insertValues.put("title", "サンプルのカテゴリー" + cat_i);
+            long id = db.insert("acc_table", "サンプルのカテゴリー" + cat_i, insertValues);
+            // table row insert
+            for (int i = 0; i < 5; i++) {
+                String mySQL = String.format("insert into acc_table" +
+                        "(category, title, user,pass,url,memo) values " +
+                        "(%d,'Tiêu đề %d%d', 'アカウント%d', 'パスワード%d','http://sample%d.jp','備考内容%d');", id, cat_i, i, i, i, i, i);
+                db.execSQL(mySQL);
+            }
+        }
+
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        /*
         Log.v("LogSample", String.format(
                 "onUpgrade: oldVersion=%d,newVersion=%d", oldVersion,
                 newVersion));
@@ -71,6 +90,7 @@ public class PersonOpenHelper extends SQLiteOpenHelper {
         } finally {
             db.endTransaction();
         }
+        */
     }
 
 
