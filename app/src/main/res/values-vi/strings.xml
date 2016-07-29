@@ -23,4 +23,13 @@
     <string name="label_memo">Ghi trú</string>
     <string name="label_showall">Tất cả các tài khoản</string>
     <string name="menu_utility">Tiện ích</string>
+    <string name="btn_back">Quay lại</string>
+    <string name="btn_del">Xóa</string>
+    <string name="btn_edit">Sửa</string>
+    <string name="btn_cancel">Quay lại</string>
+    <string name="btn_save">Lưu</string>
+    <string name="label_edit">Sửa thông tin tài khoản</string>
+    <string name="label_title">Tên hiển thị (bắt buộc)</string>
+    <string name="error_title_empty">Hãy nhập tên hiển thị</string>
+    <string name="msg_coppied">Đã copy</string>
 </resources>

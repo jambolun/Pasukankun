@@ -1,9 +1,13 @@
 package com.dinhhoang.pasukankun;
 
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -29,10 +33,22 @@ import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -73,21 +89,29 @@ public class MainActivity extends AppCompatActivity
         //showListView();
         showExpandableListView();
 
-        //loadMainContent();
 
 
 
     }
 
-    private void loadMainContent() {
 
-    }
 
     private void addNewAcc() {
         // インテントのインスタンス生成
+        //Intent intent = new Intent(MainActivity.this, DetailActivity.class);
         Intent intent = new Intent(MainActivity.this, DetailActivity.class);
         // 次画面のアクティビティ起動
         startActivity(intent);
+    }
+
+    private void detailAcc(String acc_id) {
+
+        // インテントのインスタンス生成
+        Intent intent = new Intent(MainActivity.this, AccDetailActivity.class);
+        intent.putExtra("ACC_ID", acc_id);
+        // 次画面のアクティビティ起動
+        startActivity(intent);
+
     }
 
     private void setViews() {
@@ -199,13 +223,8 @@ public class MainActivity extends AppCompatActivity
             public boolean onChildClick(ExpandableListView parent, View v,
                                         int groupPosition, int childPosition, long id) {
                 // クリックされた時の処理
-                //Toast.makeText(MainActivity.this, String.format("groupPosition=%d,childPosition=%d,id=%d",groupPosition,childPosition,id), Toast.LENGTH_SHORT).show();
-
-                Toast.makeText(
-                        getApplicationContext(),
-                        "id=" + accIDmap.get(String.format("%d%d", groupPosition, childPosition)), Toast.LENGTH_SHORT)
-                        .show();
-
+                String acc_id = accIDmap.get(String.format("%d%d", groupPosition, childPosition));
+                detailAcc(acc_id);
                 return false;
             }
         });
@@ -323,16 +342,157 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_add) {
             addNewAcc();
         } else if (id == R.id.nav_import) {
+            actionImport("input.csv");
 
         } else if (id == R.id.nav_export) {
+            actionExport();
 
         } else if (id == R.id.nav_manage) {
+            Intent intent = new Intent(getApplicationContext(), Main2Activity.class);
+            // 次画面のアクティビティ起動
+            startActivity(intent);
 
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void actionExport() {
+        String mypath = Environment.getExternalStorageDirectory().getPath() + "/PasukankunBK";
+
+        String myfile = "Backup" +
+                android.text.format.DateFormat.format("yyyyMMddhhmmss", new java.util.Date()) +
+                ".csv";
+        File dir = new File(mypath);
+        if (!dir.exists()) {
+            dir.mkdirs();
+            Log.v("HOANG_MAIN", "フォルダを作成した" + dir.getPath());
+        }
+
+        //Create the file reference
+        File dataFile = new File(mypath, myfile);
+
+        //Check if external storage is usable
+        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            Toast.makeText(this, "Cannot use storage.", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        //Create a new file and write some data
+        try {
+            FileOutputStream mOutput = new FileOutputStream(dataFile, false);
+            String data = "日本語,カタカナ,ひらがな\n日本語,カタカナ,ひらがな\n";
+            //@TODO: データベースを書き出す
+            mOutput.write(data.getBytes());
+            mOutput.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    private void actionImport(String file) {
+          /* データの読み込み */
+
+
+        // AssetManagerの呼び出し
+        AssetManager assetManager = this.getResources().getAssets();
+        try {
+            // CSVファイルの読み込み
+            InputStream is = assetManager.open(file);
+            InputStreamReader inputStreamReader = new InputStreamReader(is, "UTF-8");
+            BufferedReader bufferReader = new BufferedReader(inputStreamReader);
+            String line = "";
+            String txt = "";
+
+            ContentValues insertValues = new ContentValues();
+
+            while ((line = bufferReader.readLine()) != null) {
+
+                // 各行が","で区切られていてる項目
+                StringTokenizer st = new StringTokenizer(line, ",");
+
+                if (st.hasMoreTokens()) {
+                    insertValues.put("title", st.nextToken());
+                    Log.v("HOANG_MAIN", insertValues.get("title").toString());
+                }
+                if (st.hasMoreTokens()) {
+                    insertValues.put("acc", st.nextToken());
+                    Log.v("HOANG_MAIN", insertValues.get("acc").toString());
+                }
+                if (st.hasMoreTokens()) {
+                    insertValues.put("pass", st.nextToken());
+                    Log.v("HOANG_MAIN", insertValues.get("pass").toString());
+                }
+                if (st.hasMoreTokens()) {
+                    insertValues.put("url", st.nextToken());
+                    Log.v("HOANG_MAIN", insertValues.get("url").toString());
+                }
+                if (st.hasMoreTokens()) {
+                    insertValues.put("memo", st.nextToken());
+                    Log.v("HOANG_MAIN", insertValues.get("memo").toString());
+                }
+                if (st.hasMoreTokens()) {
+                    insertValues.put("date", st.nextToken());
+                    Log.v("HOANG_MAIN", insertValues.get("date").toString());
+                }
+            }
+
+            bufferReader.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.v("HOANG_MAIN", "読み込みに失敗しました");
+        }
+    }
+
+
+    public class CSVParser {
+
+        private Context context;
+        private String file;
+
+        public CSVParser(Context context, String file) {
+            this.file = file;
+            this.context = context;
+        }
+
+        public void parse() {
+            // AssetManagerの呼び出し
+            AssetManager assetManager = context.getResources().getAssets();
+            try {
+                // CSVファイルの読み込み
+                InputStream is = assetManager.open(file);
+                InputStreamReader inputStreamReader = new InputStreamReader(is);
+                BufferedReader bufferReader = new BufferedReader(inputStreamReader);
+                String line = "";
+                String txt = "";
+
+                while ((line = bufferReader.readLine()) != null) {
+
+                    // 各行が","で区切られていて5つの項目
+                    StringTokenizer st = new StringTokenizer(line, ",");
+                    while (st.hasMoreTokens()) {
+                        txt += st.nextToken();
+                    }
+                    txt += "\n";
+                    Log.v("HOANG_MAIN", txt);
+                    txt = "";
+                }
+
+                bufferReader.close();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                //textView.setText("読み込みに失敗しました・・・");
+            }
+        }
     }
 
 }

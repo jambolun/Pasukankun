@@ -18,6 +18,7 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
+
         MyOpenHelper helper = new MyOpenHelper(this);
         final SQLiteDatabase db = helper.getWritableDatabase();
 
