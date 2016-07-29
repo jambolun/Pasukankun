@@ -32,4 +32,7 @@
     <string name="label_title">Tên hiển thị (bắt buộc)</string>
     <string name="error_title_empty">Hãy nhập tên hiển thị</string>
     <string name="msg_coppied">Đã copy</string>
+    <string name="msg_deleted">Đã xóa thành công</string>
+    <string name="msg_saved">Đã lưu thành công</string>
+    <string name="label_addnew">Thêm thông tin tài khoản mới</string>
 </resources>

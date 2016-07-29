@@ -31,4 +31,7 @@
     <string name="error_title_empty">表示名を入力してください</string>
     <string name="msg_coppied">コピーしました</string>
     <string name="title_activity_main2">Main2Activity</string>
+    <string name="msg_deleted">削除できました</string>
+    <string name="msg_saved">保存しました</string>
+    <string name="label_addnew">新しいアカウント情報の追加</string>
 </resources>

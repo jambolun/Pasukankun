@@ -10,24 +10,24 @@
     </group>
 
     <item android:title="@string/menu_utility">
-            <menu>
-                <item
-                    android:id="@+id/nav_add"
-                    android:icon="@drawable/ic_menu_add"
-                    android:title="@string/menu_add_acc" />
-                <item
-                    android:id="@+id/nav_import"
-                    android:icon="@drawable/ic_menu_import"
-                    android:title="@string/menu_import" />
-                <item
-                    android:id="@+id/nav_export"
-                    android:icon="@drawable/ic_menu_export"
-                    android:title="@string/menu_export" />
-                <item
-                    android:id="@+id/nav_manage"
-                    android:icon="@drawable/ic_menu_manage"
-                    android:title="@string/action_settings" />
-            </menu>
-        </item>
+        <menu>
+            <item
+                android:id="@+id/nav_add"
+                android:icon="@drawable/ic_menu_add"
+                android:title="@string/menu_add_acc" />
+            <item
+                android:id="@+id/nav_import"
+                android:icon="@drawable/ic_menu_import"
+                android:title="@string/menu_import" />
+            <item
+                android:id="@+id/nav_export"
+                android:icon="@drawable/ic_menu_export"
+                android:title="@string/menu_export" />
+            <item
+                android:id="@+id/nav_manage"
+                android:icon="@drawable/ic_menu_manage"
+                android:title="@string/action_settings" />
+        </menu>
+    </item>
 
 </menu>

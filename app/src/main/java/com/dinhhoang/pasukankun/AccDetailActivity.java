@@ -21,6 +21,8 @@ public class AccDetailActivity extends AppCompatActivity {
     TextView view_acc_title, view_acc_user, view_acc_pass, view_acc_url, view_acc_memo;
     Button btn_edit, btn_del;
     String acc_id;
+    SQLiteDatabase db;
+    MyOpenHelper helper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +46,6 @@ public class AccDetailActivity extends AppCompatActivity {
         btn_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //@TODO: idを渡して編集アクティビティを起動
                 // インテントのインスタンス生成
                 Intent intent = new Intent(AccDetailActivity.this, AccEditActivity.class);
                 intent.putExtra("ACC_ID", acc_id);
@@ -56,7 +57,11 @@ public class AccDetailActivity extends AppCompatActivity {
         btn_del.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                db = helper.getWritableDatabase();
+                db.delete("acc_table", "_id=" + acc_id, null);
+                db.close();
+                Toast.makeText(getApplicationContext(), R.string.msg_deleted, Toast.LENGTH_SHORT).show();
+                finish();
             }
         });
         view_acc_user.setOnClickListener(new View.OnClickListener() {
@@ -88,8 +93,8 @@ public class AccDetailActivity extends AppCompatActivity {
 
     private void loadData() {
         //データベースから呼び出す
-        MyOpenHelper helper = new MyOpenHelper(this);
-        SQLiteDatabase db = helper.getReadableDatabase();
+        helper = new MyOpenHelper(this);
+        db = helper.getReadableDatabase();
 
         //Cursor c = db.rawQuery("select _id, acc, pass, url, memo from acc_table", null);
         Cursor c = db.rawQuery("select title, user, pass, url, memo FROM acc_table WHERE _id=" + acc_id, null);

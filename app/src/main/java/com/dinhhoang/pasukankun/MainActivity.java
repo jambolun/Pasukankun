@@ -90,16 +90,13 @@ public class MainActivity extends AppCompatActivity
         showExpandableListView();
 
 
-
-
     }
-
 
 
     private void addNewAcc() {
         // インテントのインスタンス生成
-        //Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-        Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+        Intent intent = new Intent(MainActivity.this, AccEditActivity.class);
+        intent.putExtra("ACC_ID", "AdNewAcc");
         // 次画面のアクティビティ起動
         startActivity(intent);
     }
